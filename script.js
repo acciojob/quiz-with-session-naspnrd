@@ -1,4 +1,7 @@
 //your JS code here.
+const questionsElement = document.getElementById("questions");
+const submitButton = document.getElementById("submit");
+const scoreElement = document.getElementById("score");
 
 // Do not change code below this line
 // This code will just display the questions to the screen
@@ -30,6 +33,7 @@ const questions = [
   },
 ];
 
+let userAnswers = JSON.parse(sessionStorage.getItem("progress")) || [];
 // Display the quiz questions and choices
 function renderQuestions() {
   for (let i = 0; i < questions.length; i++) {
@@ -46,6 +50,12 @@ function renderQuestions() {
       if (userAnswers[i] === choice) {
         choiceElement.setAttribute("checked", true);
       }
+		// add event listener to capture user selection
+		choiceElement.addEventListener("change", (event) => {
+			const selectedValue = event.target.value;
+			userAnswers[i] = selectedValue;
+			sessionStorage.setItem("progress", JSON.stringify(userAnswers));
+		})
       const choiceText = document.createTextNode(choice);
       questionElement.appendChild(choiceElement);
       questionElement.appendChild(choiceText);
@@ -53,4 +63,16 @@ function renderQuestions() {
     questionsElement.appendChild(questionElement);
   }
 }
+function displayScore(){
+	let score = 0;
+	for(let i = 0; i< questions.length; i++){
+		if(userAnswers[i] === questions[i].answer){
+			score++;
+		}
+	}
+	scoreElement.textContent = `Your score is ${score} out of ${questions.length}`;
+	localStorage.setItem('score', score)
+}
 renderQuestions();
+
+submitButton.addEventListener("click", displayScore);
